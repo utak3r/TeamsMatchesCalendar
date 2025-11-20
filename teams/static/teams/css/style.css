@@ -1,0 +1,123 @@
+/* Modern Grey-Steel Theme */
+:root {
+    --bg-color: #f4f6f8;
+    --text-color: #2c3e50;
+    --header-bg: #34495e;
+    --header-text: #ecf0f1;
+    --link-color: #2980b9;
+    --link-hover: #3498db;
+    --table-header-bg: #2c3e50;
+    --table-header-text: #ecf0f1;
+    --table-row-even: #ecf0f1;
+    --table-row-odd: #bdc3c7;
+    --table-row-hover: #95a5a6;
+    --footer-bg: #2c3e50;
+    --footer-text: #bdc3c7;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    margin: 0;
+    padding: 0;
+    line-height: 1.6;
+}
+
+header {
+    background-color: var(--header-bg);
+    color: var(--header-text);
+    padding: 1rem 2rem;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+header h1 {
+    margin: 0;
+    font-weight: 300;
+    letter-spacing: 1px;
+}
+
+nav {
+    margin-top: 10px;
+}
+
+nav a {
+    color: var(--header-text);
+    text-decoration: none;
+    margin-right: 15px;
+    font-weight: 500;
+    transition: color 0.3s ease;
+}
+
+nav a:hover {
+    color: var(--link-hover);
+}
+
+main {
+    padding: 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+    min-height: 80vh;
+}
+
+footer {
+    background-color: var(--footer-bg);
+    color: var(--footer-text);
+    text-align: center;
+    padding: 1rem;
+    margin-top: 2rem;
+    font-size: 0.9rem;
+}
+
+/* Table Styling */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20px 0;
+    font-size: 1rem;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+    background-color: #fff;
+}
+
+table thead tr {
+    background-color: var(--table-header-bg);
+    color: var(--table-header-text);
+    text-align: left;
+}
+
+table th, table td {
+    padding: 12px 15px;
+    border: 1px solid #ddd;
+}
+
+table tbody tr:nth-of-type(even) {
+    background-color: var(--table-row-even);
+}
+
+table tbody tr:nth-of-type(odd) {
+    background-color: var(--table-row-odd);
+}
+
+table tbody tr:hover {
+    background-color: var(--table-row-hover);
+    color: #fff;
+    cursor: default;
+}
+
+/* Links in main content */
+main a {
+    color: var(--link-color);
+    text-decoration: none;
+}
+
+main a:hover {
+    text-decoration: underline;
+}
+
+/* Headings */
+h2, h3 {
+    color: #34495e;
+    border-bottom: 2px solid #bdc3c7;
+    padding-bottom: 10px;
+    margin-bottom: 20px;
+}

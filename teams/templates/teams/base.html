@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}Football Teams{% endblock %}</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'teams/css/style.css' %}">
+</head>
+
+<body>
+    <header>
+        <h1>Football Teams Matches Calendar</h1>
+        <nav>
+            <a href="{% url 'teams:team_list' %}">Teams</a> |
+            <a href="{% url 'teams:upcoming' %}">Upcoming Matches</a>
+        </nav>
+    </header>
+
+    <main>
+        {% block content %}
+        {% endblock %}
+    </main>
+
+    <footer>
+        <p>&copy; 2025 Football Teams Matches Calendar</p>
+    </footer>
+</body>
+
+</html>

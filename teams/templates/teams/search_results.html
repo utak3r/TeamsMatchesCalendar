@@ -1,0 +1,51 @@
+{% extends "teams/base.html" %}
+{% block content %}
+<h2>Results for "{{ q }}"</h2>
+
+<form method="post" action="{% url 'teams:add' %}">
+  {% csrf_token %}
+  <table>
+    <thead><tr><th>Logo</th><th>Name</th><th>League</th><th>Add</th></tr></thead>
+    <tbody>
+      {% for r in results %}
+        <tr>
+          <td>
+            {% if r.logo %}<img src="{{ r.logo }}" style="height:40px">{% endif %}
+          </td>
+          <td>{{ r.name }}</td>
+          <td>{{ r.league }}</td>
+          <td>
+            <button name="url" value="{{ r.url }}" formaction="{% url 'teams:add' %}" formmethod="post" type="submit"
+              onclick="event.preventDefault(); submitAdd('{{ r.name|escapejs }}','{{ r.url|escapejs }}','{{ r.league|escapejs }}','{{ r.logo|escapejs }}')">
+              Add
+            </button>
+          </td>
+        </tr>
+      {% empty %}
+        <tr><td colspan="4">No results</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</form>
+
+<script>
+function submitAdd(name,url,league,logo){
+  const form = document.createElement('form');
+  form.method = 'post';
+  form.action = "{% url 'teams:add' %}";
+  const csrf = document.createElement('input');
+  csrf.type = 'hidden';
+  csrf.name = 'csrfmiddlewaretoken';
+  csrf.value = '{{ csrf_token }}';
+  form.appendChild(csrf);
+  for(const [k,v] of [['name',name],['url',url],['league',league],['logo',logo]]){
+    const i = document.createElement('input');
+    i.type='hidden'; i.name=k; i.value=v;
+    form.appendChild(i);
+  }
+  document.body.appendChild(form);
+  form.submit();
+}
+</script>
+
+{% endblock %}

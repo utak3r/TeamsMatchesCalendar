@@ -1,0 +1,41 @@
+{% extends "teams/base.html" %}
+{% block content %}
+<h1>Upcoming matches</h1>
+<form method="post" action="{% url 'teams:add_to_calendar' %}">
+  {% csrf_token %}
+  <button type="submit">Add to Google Calendar</button>
+</form>
+
+{% load tz %}
+{% timezone "Europe/Warsaw" %}
+
+<table>
+  <thead>
+    <tr>
+      <th>Date</th>
+      <th>League</th>
+      <th>Match</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for m in matches %}
+    <tr>
+      <td>{{ m.datetime|date:"Y-m-d H:i" }}</td>
+      <td>{{ m.league }}</td>
+      <td>{% if m.url %}
+        <a href="{{ m.url }}" target="_blank">{{ m.home }} vs {{ m.away }}</a>
+        {% else %}
+        {{ m.home }} vs {{ m.away }}
+        {% endif %}
+      </td>
+    </tr>
+    {% empty %}
+    <tr>
+      <td colspan="3">No matches found.</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+{% endtimezone %}
+{% endblock %}

@@ -1,0 +1,50 @@
+{% extends "teams/base.html" %}
+{% load static %}
+{% block content %}
+<h1>Saved teams</h1>
+<button id="btn-add">Add new team</button>
+
+<table>
+  <thead>
+    <tr>
+      <th>Logo</th>
+      <th>Name</th>
+      <th>League</th>
+      <th>Action</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for team in teams %}
+    <tr>
+      <td>
+        {% if team.logo %}
+        <img src="{{ team.logo }}" alt="{{ team.name }}" style="height:40px" />
+        {% endif %}
+      </td>
+      <td>{{ team.name }}</td>
+      <td>{{ team.league }}</td>
+      <td>
+        <form action="{% url 'teams:remove' team.id %}" method="post" style="display:inline;">
+          {% csrf_token %}
+          <button type="submit" class="btn-remove">Remove team</button>
+        </form>
+      </td>
+    </tr>
+    {% empty %}
+    <tr>
+      <td colspan="4">No teams yet.</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+<form id="search-form" method="post" action="{% url 'teams:search' %}" style="display:none;">
+  {% csrf_token %}
+  {{ form.q }}
+  <button type="submit">Search</button>
+</form>
+
+<a href="{% url 'teams:upcoming' %}">See upcoming matches</a>
+
+<script src="{% static 'teams/js/team_search.js' %}"></script>
+{% endblock %}
