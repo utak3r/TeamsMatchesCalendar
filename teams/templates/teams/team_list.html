@@ -44,7 +44,9 @@
   <button type="submit">Search</button>
 </form>
 
-<a href="{% url 'teams:upcoming' %}">See upcoming matches</a>
+<form action="{% url 'teams:upcoming' %}" method="get">
+  <button type="submit">See upcoming matches</button>
+</form>
 
 <script src="{% static 'teams/js/team_search.js' %}"></script>
 {% endblock %}
