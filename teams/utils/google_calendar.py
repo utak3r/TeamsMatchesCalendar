@@ -57,7 +57,7 @@ def date_treat_as_local(date):
     new_date = datetime(date.year, date.month, date.day, date.hour, date.minute, tzinfo=local_tz)
     return new_date
 
-def create_events_for_matches(credentials, matches):
+def create_events_for_matches(credentials, matches, calendar_id='primary'):
     """
     Creates or updates match events in Google Calendar.
     Does not duplicate matches, updates if the time changes.
@@ -81,7 +81,7 @@ def create_events_for_matches(credentials, matches):
         time_max = (dt + timedelta(days=1)).astimezone().isoformat()
 
         existing_events = service.events().list(
-            calendarId=settings.CALENDAR_ID,
+            calendarId=calendar_id,
             timeMin=time_min,
             timeMax=time_max,
             q=summary,  # search by match title
@@ -105,7 +105,7 @@ def create_events_for_matches(credentials, matches):
                 existing_event['description'] = f"{league}\nMatch page: {m.get('url', '')}"
 
                 updated = service.events().update(
-                    calendarId=settings.CALENDAR_ID,
+                    calendarId=calendar_id,
                     eventId=existing_event['id'],
                     body=existing_event
                 ).execute()
@@ -121,7 +121,7 @@ def create_events_for_matches(credentials, matches):
                 'start': {'dateTime': start},
                 'end': {'dateTime': end},
             }
-            created_event = service.events().insert(calendarId=settings.CALENDAR_ID, body=event).execute()
+            created_event = service.events().insert(calendarId=calendar_id, body=event).execute()
             created_or_updated.append({'action': 'created', 'id': created_event['id'], 'summary': summary})
 
     return created_or_updated

@@ -57,7 +57,8 @@ def upcoming_matches(request):
             print(f"Error fetching for {team}: {e}")
     # Each match dict should contain at least: 'home','away','datetime'(timezone-aware), 'url','team'...
     matches = sorted(matches, key=lambda m: m['datetime'])
-    return render(request, 'teams/upcoming_matches.html', {'matches': matches})
+    calendar_id = request.COOKIES.get('calendar_id', '')
+    return render(request, 'teams/upcoming_matches.html', {'matches': matches, 'calendar_id': calendar_id})
 
 @require_POST
 def add_matches_to_calendar(request):
@@ -82,9 +83,29 @@ def add_matches_to_calendar(request):
         return creds_flow['redirect']  # HttpResponseRedirect to Google consent
 
     credentials = creds_flow['credentials']
-    created_events = create_events_for_matches(credentials, matches)
-    messages.success(request, f'Added {len(created_events)} events to Google Calendar.')
-    return redirect('teams:upcoming')
+    
+    calendar_id = request.POST.get('calendar_id')
+    # If user provided an ID, use it. If empty string or None, fallback to 'primary' in the util function,
+    # but here we just pass what we got or empty string.
+    # Actually, let's clean it up.
+    if not calendar_id:
+        calendar_id = 'primary'
+        
+    created_events = create_events_for_matches(credentials, matches, calendar_id=calendar_id)
+    
+    messages.success(request, f'Added {len(created_events)} events to Google Calendar ({calendar_id}).')
+    response = redirect('teams:upcoming')
+    
+    # Store the user's input in a cookie. If they used the default 'primary' by leaving it empty,
+    # we might want to store empty string so the input remains empty next time?
+    # Or store 'primary' if they explicitly typed it?
+    # The requirement says "if user won't enter any calendar, then main default calendar should be used".
+    # And "this Calendar ID should be stored in a cookie".
+    # If they entered nothing, let's store nothing (or whatever they sent).
+    user_input_calendar_id = request.POST.get('calendar_id', '')
+    response.set_cookie('calendar_id', user_input_calendar_id, max_age=365*24*60*60)
+    
+    return response
 
 @require_POST
 def remove_team(request, team_id):

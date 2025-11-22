@@ -3,6 +3,8 @@
 <h1>Upcoming matches</h1>
 <form method="post" action="{% url 'teams:add_to_calendar' %}">
   {% csrf_token %}
+  <label for="calendar_id">Calendar ID (optional):</label>
+  <input type="text" name="calendar_id" id="calendar_id" value="{{ calendar_id|default:'' }}" placeholder="primary">
   <button type="submit">Add to Google Calendar</button>
 </form>
 
