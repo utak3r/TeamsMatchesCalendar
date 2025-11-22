@@ -189,7 +189,14 @@ def fetch_upcoming_matches_for_team(team, days_ahead=30, domain=BASE):
       - construct spielplan url: /{name}/spielplandatum/verein/{id}
       - parse table rows: find date/time, opponent, match link
     """
-    club_url = team.url if hasattr(team, 'url') else team
+    club_url = None
+    if isinstance(team, dict):
+        club_url = team.get('url')
+    elif hasattr(team, 'url'):
+        club_url = team.url
+    else:
+        club_url = team
+
     if not club_url:
         return []
 
@@ -243,7 +250,7 @@ def fetch_upcoming_matches_for_team(team, days_ahead=30, domain=BASE):
 
     # Find the team name
     headline = soup.find('div', class_='data-header__headline-container')
-    team_name = headline.find('h1').text.strip()
+    team_name_display = headline.find('h1').text.strip()
 
     # Find the matches
     responsive_table_div = soup.find('div', class_='responsive-table')
@@ -265,14 +272,20 @@ def fetch_upcoming_matches_for_team(team, days_ahead=30, domain=BASE):
                 home = ''
                 away = ''
                 if (home_or_away == 'H'):
-                    home = team_name
+                    home = team_name_display
                     away = opponent
-                    #teams_match = f"{team_name} - {opponent}"
+                    #teams_match = f"{team_name_display} - {opponent}"
                 else:
                     home = opponent
-                    away = team_name
-                    #teams_match = f"{opponent} - {team_name}"
+                    away = team_name_display
+                    #teams_match = f"{opponent} - {team_name_display}"
                 match_link = f"{domain}{tds[9].find('a').attrs.get('href')}"
+                
+                original_team_name = ''
+                if isinstance(team, dict):
+                    original_team_name = team.get('name', '')
+                else:
+                    original_team_name = getattr(team, 'name', '')
 
                 matches.append({
                     'home': home,
@@ -281,7 +294,7 @@ def fetch_upcoming_matches_for_team(team, days_ahead=30, domain=BASE):
                     'datetime': date_datetime,
                     'url': match_link,
                     'team_id': team_id,
-                    'team_name': getattr(team, 'name', None) or ''
+                    'team_name': original_team_name
                 })
 
                 #events.append((league, date_datetime, teams_match))

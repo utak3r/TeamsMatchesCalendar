@@ -9,6 +9,6 @@ urlpatterns = [
     path('add/', views.add_team_from_tm, name='add'),
     path('upcoming/', views.upcoming_matches, name='upcoming'),
     path('add-to-calendar/', views.add_matches_to_calendar, name='add_to_calendar'),
-    path('remove/<int:team_id>/', views.remove_team, name='remove'),
+    path('remove/<str:team_id>/', views.remove_team, name='remove'),
     path('oauth2callback/', google_calendar.oauth2callback, name='oauth2callback'),
 ]

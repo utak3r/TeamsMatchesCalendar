@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse
 from django.views.decorators.http import require_POST
-from .models import Team
+from .utils import cookie_storage
 from .forms import TeamSearchForm
 from .utils.transfermarkt import search_transfermarkt, fetch_upcoming_matches_for_team
 from .utils.google_calendar import create_events_for_matches, ensure_credentials_for_user
@@ -10,7 +10,9 @@ import datetime
 from django.utils import timezone
 
 def team_list(request):
-    teams = Team.objects.order_by('name')
+    teams = cookie_storage.get_teams(request)
+    # Sort by name
+    teams.sort(key=lambda x: x['name'])
     form = TeamSearchForm()
     return render(request, 'teams/team_list.html', {'teams': teams, 'form': form})
 
@@ -35,18 +37,21 @@ def add_team_from_tm(request):
     if not name:
         messages.error(request, 'Brak nazwy drużyny.')
         return redirect('teams:team_list')
-    team, created = Team.objects.get_or_create(name=name, defaults={'url': url or '', 'league': league, 'logo': logo})
-    if not created:
-        # optionally update fields
-        team.url = url or team.url
-        team.league = league or team.league
-        team.logo = logo or team.logo
-        team.save()
-    messages.success(request, f'Dodano drużynę {team.name}')
-    return redirect('teams:team_list')
+    
+    teams = cookie_storage.get_teams(request)
+    new_team, created = cookie_storage.add_team(teams, name, url or '', league, logo)
+    
+    if created:
+        messages.success(request, f'Dodano drużynę {new_team["name"]}')
+    else:
+        messages.info(request, f'Drużyna {new_team["name"]} już istnieje.')
+        
+    response = redirect('teams:team_list')
+    cookie_storage.save_teams(response, teams)
+    return response
 
 def upcoming_matches(request):
-    teams = Team.objects.all()
+    teams = cookie_storage.get_teams(request)
     matches = []
     for team in teams:
         try:
@@ -68,7 +73,7 @@ def add_matches_to_calendar(request):
     # For demo we'll accept a JSON payload with matches; in practice use server-side fetching / session flows.
 
     # Example: we'll fetch upcoming matches server-side and create events for them.
-    teams = Team.objects.all()
+    teams = cookie_storage.get_teams(request)
     matches = []
     for team in teams:
         try:
@@ -109,8 +114,17 @@ def add_matches_to_calendar(request):
 
 @require_POST
 def remove_team(request, team_id):
-    team = get_object_or_404(Team, pk=team_id)
-    team_name = team.name
-    team.delete()
+    teams = cookie_storage.get_teams(request)
+    # Find team name for message (optional)
+    team_name = "Unknown"
+    for t in teams:
+        if t.get('id') == team_id:
+            team_name = t.get('name')
+            break
+            
+    teams = cookie_storage.remove_team_by_id(teams, team_id)
+    
     messages.success(request, f'Removed team {team_name}.')
-    return redirect('teams:team_list')
+    response = redirect('teams:team_list')
+    cookie_storage.save_teams(response, teams)
+    return response
