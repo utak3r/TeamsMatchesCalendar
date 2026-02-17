@@ -3,11 +3,9 @@ version: '3.8'
 services:
   web:
     build: .
-    # Use the command from Dockerfile, or override here if needed.
-    # We mount the volume for easier development/debugging if needed,
-    # but for pure production simulation you might remove the volume.
-    # volumes:
-    #   - .:/app
+    # Remove volumes for production:
+    volumes:
+      - .:/app
     ports:
       - "8000:8000"
     env_file:

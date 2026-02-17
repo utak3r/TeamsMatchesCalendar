@@ -131,5 +131,5 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # Google API credentials
 GOOGLE_CREDENTIALS_FILE = os.environ.get('GOOGLE_CREDENTIALS_PATH')
 
-# Default Google Calendar ID
-CALENDAR_ID = 'a57171843bd9e8c3ffe4ba97716c76e722ce52747a2872d879ffc9914a8523e9@group.calendar.google.com'
+# Django timezone name, without it Python will use UTC after putting into Docker container, no matter what
+TIME_ZONE = os.environ.get('TZ')
