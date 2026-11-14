@@ -47,15 +47,8 @@ def _extract_team_name_from_url(url):
     Try to extract the team name from Transfermarkt URLs like:
       .../fc-barcelona/startseite/verein/131 or .../real-madrid/transfers/verein/418
     """
-    team_url_name = None
-    m = re.search(r'transfermarkt\.com/([^/]+)/startseite/verein/\d+', url)
-    if m:
-        team_url_name = m.group(1)
-    else:
-        m = re.search(r'transfermarkt\.com/([^/]+)/transfers/verein/\d+', url)
-        if m:
-            team_url_name = m.group(1)
-    return team_url_name
+    m = re.search(r'transfermarkt\.com/([^/]+)/[^/]+/verein/\d+', url)
+    return m.group(1) if m else None
 
 def search_transfermarkt(query, max_results=10, domain=BASE):
     """
@@ -228,7 +221,8 @@ def fetch_upcoming_matches_for_team(team, days_ahead=30, domain=BASE):
     now = datetime.now(DEFAULT_TZ)
     season_year = now.year if now.month >= 7 else now.year - 1  # heuristic: european season start in summer
     candidates = [
-        f"{domain}/{team_name}/spielplandatum/verein/{team_id}"
+        f"{domain}/{team_name}/spielplandatum/verein/{team_id}/saison_id/{season_year}",
+        f"{domain}/{team_name}/spielplandatum/verein/{team_id}",
     ]
 
     html = None
@@ -254,6 +248,8 @@ def fetch_upcoming_matches_for_team(team, days_ahead=30, domain=BASE):
 
     # Find the matches
     responsive_table_div = soup.find('div', class_='responsive-table')
+    if not responsive_table_div:
+        return []
     responsive_table = responsive_table_div.find('table')
     responsive_table_tbody = responsive_table.find('tbody')
     mecze = responsive_table_tbody.findAll('tr')
