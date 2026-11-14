@@ -1,0 +1,37 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Docker: Build Local Image",
+            "type": "shell",
+            "command": "docker compose -f docker-compose.yml build",
+            "group": "build",
+            "problemMatcher": []
+        },
+        {
+            "label": "Docker: Build Local Debug Image",
+            "type": "shell",
+            "command": "docker compose -f docker-compose.yml -f docker-compose.debug.yml build",
+            "group": "build",
+            "problemMatcher": []
+        },
+        {
+            "label": "Docker: Build & Export Production Image",
+            "type": "shell",
+            "command": "docker build -t utak3r/teamsmatchescalendar:latest . && docker save -o teamsmatchescalendar.tar utak3r/teamsmatchescalendar:latest",
+            "windows": {
+                "options": {
+                    "shell": {
+                        "executable": "cmd.exe",
+                        "args": ["/d", "/c"]
+                    }
+                }
+            },
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "problemMatcher": []
+        }
+    ]
+}
