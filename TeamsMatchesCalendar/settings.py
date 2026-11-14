@@ -26,9 +26,10 @@ if os.environ.get('DJANGO_DEVELOPMENT', '1') == '1':
 SECRET_KEY = os.environ.get('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['mecze.utak3r.pl', 'localhost', '127.0.0.1']
+CSRF_TRUSTED_ORIGINS = ['https://mecze.utak3r.pl']
 
 
 # Application definition
