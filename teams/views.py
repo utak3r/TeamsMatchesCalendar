@@ -3,7 +3,7 @@ from django.urls import reverse
 from django.views.decorators.http import require_POST
 from .utils import cookie_storage
 from .forms import TeamSearchForm
-from .utils.transfermarkt import search_transfermarkt, fetch_upcoming_matches_for_team
+from .utils.thesportsdb import search_teams, fetch_upcoming_matches_for_team
 from .utils.google_calendar import create_events_for_matches, ensure_credentials_for_user
 from django.contrib import messages
 import datetime
@@ -22,9 +22,9 @@ def tm_search(request):
     if not form.is_valid():
         return redirect('teams:list')
     q = form.cleaned_data['q']
-    # search_transfermarkt should return a list of dicts:
+    # search_teams returns a list of dicts:
     # [{'name':..., 'url':..., 'league':..., 'logo':...}, ...]
-    results = search_transfermarkt(q)
+    results = search_teams(q)
     return render(request, 'teams/search_results.html', {'results': results, 'q': q})
 
 @require_POST
